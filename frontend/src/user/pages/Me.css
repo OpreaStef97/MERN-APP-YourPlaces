@@ -1,0 +1,19 @@
+.me {
+    min-width: 70%;
+}
+
+@media (min-width: 830px) {
+    .me {
+        min-width: 40%;
+    }
+}
+
+.me__msg {
+    font-weight: 700;
+    font-size: 1.6rem;
+}
+
+.me__pass {
+    font-weight: 500;
+    font-size: 1.2rem;
+}
