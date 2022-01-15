@@ -1,9 +1,14 @@
-import { FC, useContext } from 'react';
+import { FC, FormEvent, useContext, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Button from '../../shared/components/FormElements/Button';
 import Input from '../../shared/components/FormElements/Input';
 import Card from '../../shared/components/UIElements/Card';
+import ErrorModal from '../../shared/components/UIElements/ErrorModal';
+import LoadingSpinner from '../../shared/components/UIElements/LoadingSpinner';
+import Modal from '../../shared/components/UIElements/Modal';
 import { AuthContext } from '../../shared/context/auth-context';
 import { useForm } from '../../shared/hooks/use-form';
+import { useHttpClient } from '../../shared/hooks/use-http';
 import {
     VALIDATOR_EMAIL,
     VALIDATOR_MINLENGTH,
@@ -13,6 +18,9 @@ import './Me.css';
 
 const Me: FC = () => {
     const authCtx = useContext(AuthContext);
+    const navigate = useNavigate();
+    const [success, setSuccess] = useState(false);
+    const { isLoading, error, sendRequest, clearError } = useHttpClient();
 
     const [formState, inputHandler] = useForm(
         {
@@ -20,11 +28,11 @@ const Me: FC = () => {
                 value: '',
                 isValid: false,
             },
-            'old-password': {
+            oldpassword: {
                 value: '',
                 isValid: false,
             },
-            'new-password': {
+            newpassword: {
                 value: '',
                 isValid: false,
             },
@@ -32,15 +40,50 @@ const Me: FC = () => {
         false
     );
 
+    const changePasswordSubmitHandler = (event: FormEvent) => {
+        event.preventDefault();
+
+        sendRequest(
+            `${process.env.REACT_APP_BACKEND_URL}/users/changepassword`,
+            'POST',
+            {
+                'Content-Type': 'application/json',
+                Authorization: 'Bearer ' + authCtx.token,
+            },
+            JSON.stringify({
+                email: formState.inputs.email!.value!,
+                oldpassword: formState.inputs.oldpassword!.value!,
+                newpassword: formState.inputs.newpassword!.value!,
+            })
+        )
+            .then(() => {
+                setSuccess(true);
+            })
+            .catch(err => console.log(err));
+    };
+
+    const closeModal = () => {
+        setSuccess(false);
+        navigate('/');
+    };
+
     return (
         <div className="center">
+            <Modal
+                show={success}
+                onCancel={closeModal}
+                footer={<Button onClick={closeModal}>CLOSE</Button>}
+            >
+                Password Changed!
+            </Modal>
+            <ErrorModal error={error} onClear={clearError} />
             <Card className="me">
                 <p className="me__msg">
                     Welcome {authCtx.name?.split(' ')[0]}!
                 </p>
                 <p className="me__pass">Change Password</p>
                 <hr />
-                <form>
+                <form onSubmit={changePasswordSubmitHandler}>
                     <Input
                         id="email"
                         element="input"
@@ -50,9 +93,10 @@ const Me: FC = () => {
                         errorText="Please enter a valid email"
                         onInput={inputHandler}
                         initialValid={true}
+                        initialValue={authCtx.email!}
                     />
                     <Input
-                        id="old-password"
+                        id="oldpassword"
                         element="input"
                         type="password"
                         label="Old Password"
@@ -61,7 +105,7 @@ const Me: FC = () => {
                         onInput={inputHandler}
                     />
                     <Input
-                        id="new-password"
+                        id="newpassword"
                         element="input"
                         type="password"
                         label="New Password"
@@ -71,7 +115,8 @@ const Me: FC = () => {
                     />
 
                     <Button type="submit" disabled={!formState.isValid}>
-                        Change Password
+                        {isLoading && 'Loading..'}
+                        {!isLoading && 'Change Password'}
                     </Button>
                 </form>
             </Card>

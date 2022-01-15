@@ -19,4 +19,9 @@
 
     font-size: 5rem;
     color: #ff0055;
+    transition: all 0.2s;
+}
+
+.side-drawer p:hover {
+    transform: scale(0.9);
 }

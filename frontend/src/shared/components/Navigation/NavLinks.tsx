@@ -37,7 +37,7 @@ const NavLinks: FC<{
             {!authCtx.isLoggedIn && (
                 <li>
                     <NavLink onClick={props.onClick} to="/auth">
-                        AUTHENTICATE
+                        LOGIN
                     </NavLink>
                 </li>
             )}

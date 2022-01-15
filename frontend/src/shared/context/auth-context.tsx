@@ -6,6 +6,7 @@ const initialState: LoginContext = {
     isLoggedIn: false,
     token: null,
     userId: null,
+    email: null,
     imageUrl: null,
     name: null,
     login: () => {},

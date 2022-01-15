@@ -19,11 +19,58 @@ export const getAllUsers = asyncHandler(
     }
 );
 
-// export const getUser = asyncHandler(
-//     async (req: Request, res: Response, next: NextFunction) => {
-//         const user = await
-//     }
-// )
+export const changePassword = asyncHandler(
+    async (req: Request, res: Response, next: NextFunction) => {
+        const errors = validationResult(req);
+
+        if (!errors.isEmpty()) {
+            return next(
+                new AppError(
+                    422,
+                    'Invalid inputs passed, please check your email and password.'
+                )
+            );
+        }
+
+        // search for user
+
+        const { email, oldpassword, newpassword } = req.body;
+
+        const identifiedUser = await User.findOne({ email });
+
+        if (!identifiedUser) {
+            return next(new AppError(401, 'Credentials seem to be wrong'));
+        }
+
+        // check if identifiedUser is logged in
+
+        if (identifiedUser.id.toString() !== req.userData.userId) {
+            return next(
+                new AppError(401, 'Please login to continue the operation')
+            );
+        }
+
+        // check password
+        const isValidPassword = await bcrypt.compare(
+            oldpassword,
+            identifiedUser.password.toString()
+        );
+
+        if (!isValidPassword) {
+            return next(new AppError(401, 'Invalid credentials'));
+        }
+
+        // password is correct
+
+        const hashedPassword = await bcrypt.hash(newpassword, 12);
+
+        await identifiedUser.update({ password: hashedPassword });
+
+        res.status(201).json({
+            message: 'Password Updated',
+        });
+    }
+);
 
 export const signup = asyncHandler(
     async (req: Request, res: Response, next: NextFunction) => {
@@ -31,7 +78,10 @@ export const signup = asyncHandler(
 
         if (!errors.isEmpty()) {
             return next(
-                new AppError(422, 'User exists already, please login instead')
+                new AppError(
+                    422,
+                    'Invalid inputs passed, please check your data.'
+                )
             );
         }
 

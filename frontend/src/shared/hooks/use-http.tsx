@@ -33,9 +33,9 @@ export const useHttpClient = () => {
                 );
 
                 if (response.statusText === 'No Content') return;
-
+                    
                 const responseData = await response.json();
-
+                
                 if (!response.ok) {
                     throw new Error(responseData.message);
                 }

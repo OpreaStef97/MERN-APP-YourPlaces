@@ -2,6 +2,7 @@ export type LoginContext = {
     isLoggedIn: boolean;
     token: any;
     userId: string | null;
+    email: string | null;
     imageUrl: string | null;
     name: string | null;
     login: (token: any) => void;

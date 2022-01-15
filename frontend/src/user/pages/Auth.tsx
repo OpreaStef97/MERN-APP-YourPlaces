@@ -65,7 +65,7 @@ const Auth: FC = props => {
         setIsLoginMode(prevMode => !prevMode);
     };
 
-    const authSubmitHandler = async (event: React.FormEvent) => {
+    const authSubmitHandler = (event: React.FormEvent) => {
         event.preventDefault();
 
         if (isLoginMode) {
