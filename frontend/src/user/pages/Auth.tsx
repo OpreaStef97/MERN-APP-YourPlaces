@@ -1,5 +1,4 @@
 import React, { FC, useContext, useState } from 'react';
-import decodeToken from 'jwt-decode';
 
 import { useForm } from '../../shared/hooks/use-form';
 import Input from '../../shared/components/FormElements/Input';
@@ -17,7 +16,6 @@ import LoadingSpinner from '../../shared/components/UIElements/LoadingSpinner';
 import { AuthContext } from '../../shared/context/auth-context';
 import { useHttpClient } from '../../shared/hooks/use-http';
 import './Auth.css';
-import { isTokenData } from '../../shared/types/token-data';
 
 const Auth: FC = props => {
     const [isLoginMode, setIsLoginMode] = useState(true);
@@ -83,17 +81,8 @@ const Auth: FC = props => {
                 })
             )
                 .then(res => {
-                    const decodedToken = decodeToken(res.token);
-
-                    if (!isTokenData(decodedToken))
-                        throw new Error('Not a valid token, auth failed');
-
                     authCtx.login(
-                        decodedToken.userId,
                         res.token,
-                        new Date(decodedToken.exp * 1000),
-                        decodedToken.imageUrl,
-                        decodedToken.name
                     );
                 })
                 .catch(err => console.log(err.message));
@@ -111,16 +100,8 @@ const Auth: FC = props => {
                 formDATA
             )
                 .then(res => {
-                    const decodedToken = decodeToken(res.token);
-
-                    if (!isTokenData(decodedToken))
-                        throw new Error('Not a valid token, auth failed');
                     authCtx.login(
-                        decodedToken.userId,
-                        res.token,
-                        new Date(decodedToken.exp * 1000),
-                        decodedToken.imageUrl,
-                        decodedToken.name
+                        res.token
                     );
                 })
                 .catch(err => console.log(err.message));

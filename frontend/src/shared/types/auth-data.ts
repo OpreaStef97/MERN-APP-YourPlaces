@@ -4,21 +4,17 @@ export type LoginContext = {
     userId: string | null;
     imageUrl: string | null;
     name: string | null;
-    login: (
-        uid: string,
-        token: any,
-        expirationDate?: Date,
-        imageUrl?: string,
-        name?: string
-    ) => void;
+    login: (token: any) => void;
     logout: () => void;
     tokenExpirationDate?: Date | null;
 };
 
 export type LoginState = {
     token: any;
+    isLoggedIn: boolean;
     userId: string | null;
+    email: string | null;
     imageUrl: string | null;
     name: string | null;
-    expirationDate: Date | null;
+    exp: number | null;
 };

@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useReducer } from 'react';
-import { LoginState} from '../types/auth-data';
+import { LoginState } from '../types/auth-data';
+import decodeToken from 'jwt-decode';
+import { isTokenData } from '../types/token-data';
 
 let logoutTimer: NodeJS.Timeout;
 
@@ -9,11 +11,13 @@ type Action = {
 };
 
 const initialState: LoginState = {
-    name: null,
-    userId: null,
+    isLoggedIn: false,
     token: null,
+    name: null,
+    email: null,
+    userId: null,
     imageUrl: null,
-    expirationDate: null,
+    exp: null,
 };
 
 const authReducer = (state: LoginState, action: Action): LoginState => {
@@ -31,36 +35,30 @@ const authReducer = (state: LoginState, action: Action): LoginState => {
 export const useAuth = () => {
     const [authState, dispatch] = useReducer(authReducer, initialState);
 
-    const login = useCallback(
-        (userId, token, expirationDate, imageUrl, name) => {
-            const tokenExpirationDate =
-                expirationDate ||
-                new Date(new Date().getTime() + 60 * 60 * 1000);
+    const login = useCallback(token => {
+        const decodedToken = decodeToken(token);
 
-            dispatch({
-                type: 'CHANGE',
-                payload: {
-                    userId,
-                    token,
-                    imageUrl,
-                    name,
-                    expirationDate: tokenExpirationDate,
-                },
-            });
+        if (!isTokenData(decodedToken)) {
+            return;
+        }
 
-            localStorage.setItem(
-                'userData',
-                JSON.stringify({
-                    userId: userId,
-                    token: token,
-                    expiration: tokenExpirationDate.toISOString(),
-                    imageUrl,
-                    name,
-                })
-            );
-        },
-        []
-    );
+        dispatch({
+            type: 'CHANGE',
+            payload: {
+                isLoggedIn: !!token,
+                token,
+                ...decodedToken,
+            },
+        });
+
+        localStorage.setItem(
+            'userData',
+            JSON.stringify({
+                token,
+                expiration: new Date(decodedToken.exp * 1000),
+            })
+        );
+    }, []);
 
     useEffect(() => {
         let returnObj = localStorage.getItem('userData');
@@ -70,16 +68,9 @@ export const useAuth = () => {
         if (
             storedData &&
             storedData.token &&
-            storedData.imageUrl &&
             new Date(storedData.expiration) > new Date()
         ) {
-            login(
-                storedData.userId,
-                storedData.token,
-                new Date(storedData.expiration),
-                storedData.imageUrl,
-                storedData.name
-            );
+            login(storedData.token);
         }
     }, [login]);
 
@@ -87,32 +78,33 @@ export const useAuth = () => {
         dispatch({
             type: 'CHANGE',
             payload: {
-                name: null,
-                userId: null,
+                isLoggedIn: false,
                 token: null,
+                name: null,
+                email: null,
+                userId: null,
                 imageUrl: null,
-                expirationDate: null,
+                exp: null,
             },
         });
 
         localStorage.removeItem('userData');
     }, []);
 
-    const { token, expirationDate } = authState;
+    const { token, exp } = authState;
 
     useEffect(() => {
-        if (token && expirationDate) {
+        if (token && exp) {
             const remainingTime =
-                expirationDate.getTime() - new Date().getTime();
+                new Date(exp).getTime() * 1000 - new Date().getTime();
 
             logoutTimer = setTimeout(logout, remainingTime);
         } else {
             clearTimeout(logoutTimer);
         }
-    }, [logout, token, expirationDate]);
+    }, [logout, token, exp]);
 
     return {
-        isLoggedIn: !!token,
         login,
         logout,
         ...authState,
