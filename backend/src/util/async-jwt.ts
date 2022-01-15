@@ -8,7 +8,7 @@ export const verifyAsyncJWT = (
     return new Promise((resolve, reject) => {
         jwt.verify(token, secretKey, (err, decodedToken) => {
             if (err || !decodedToken)
-                return reject(new AppError(403, 'Authentication failed!'));
+                return reject(err || new AppError(500, 'Something went wrong'));
             return resolve(decodedToken);
         });
     });
@@ -21,12 +21,7 @@ export const signAsyncJWT = (
     return new Promise((resolve, reject) => {
         jwt.sign(payload, secretKey, { expiresIn: '1h' }, (err, token) => {
             if (err || !token)
-                return reject(
-                    new AppError(
-                        500,
-                        (err && err.message) || 'Something went wrong'
-                    )
-                );
+                return reject(err || new AppError(500, 'Something went wrong'));
             return resolve(token);
         });
     });

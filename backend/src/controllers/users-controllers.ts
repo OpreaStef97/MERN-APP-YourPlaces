@@ -39,14 +39,17 @@ export const changePassword = asyncHandler(
         const identifiedUser = await User.findOne({ email });
 
         if (!identifiedUser) {
-            return next(new AppError(401, 'Credentials seem to be wrong'));
+            return next(new AppError(400, 'Token is invalid or has expired'));
         }
 
         // check if identifiedUser is logged in
 
         if (identifiedUser.id.toString() !== req.userData.userId) {
             return next(
-                new AppError(401, 'Please login to continue the operation')
+                new AppError(
+                    401,
+                    'You need to be logged in to perform this action'
+                )
             );
         }
 
@@ -57,14 +60,14 @@ export const changePassword = asyncHandler(
         );
 
         if (!isValidPassword) {
-            return next(new AppError(401, 'Invalid credentials'));
+            return next(new AppError(401, 'Your current password is wrong'));
         }
 
         // password is correct
 
         const hashedPassword = await bcrypt.hash(newpassword, 12);
 
-        await identifiedUser.update({ password: hashedPassword });
+        await identifiedUser.updateOne({ password: hashedPassword });
 
         res.status(201).json({
             message: 'Password Updated',

@@ -86,7 +86,7 @@ const PlaceItem: FC<PlaceData & { onDelete: (id: string) => void }> = props => {
                 </p>
             </Modal>
             <li className="place-item">
-                <Card>
+                <Card className="place-item__card">
                     {isLoading && <LoadingSpinner asOverlay />}
                     <div className="place-item__image">
                         <img
