@@ -12,7 +12,7 @@ import { useForm } from '../../shared/hooks/use-form';
 import { useHttpClient } from '../../shared/hooks/use-http';
 import LoadingSpinner from '../../shared/components/UIElements/LoadingSpinner';
 import ErrorModal from '../../shared/components/UIElements/ErrorModal';
-import { PlaceData } from '../types/place-data';
+import { PlaceData } from '../types/place-type';
 import { AuthContext } from '../../shared/context/auth-context';
 
 const UpdatePlace = () => {

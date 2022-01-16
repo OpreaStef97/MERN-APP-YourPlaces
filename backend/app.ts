@@ -1,4 +1,4 @@
-import express, { NextFunction } from 'express';
+import express from 'express';
 import morgan from 'morgan';
 import bodyParser from 'body-parser';
 import mongoose from 'mongoose';
@@ -67,7 +67,7 @@ app.use((req, res, next) => {
 app.use('/api/places', placesRoutes);
 app.use('/api/users', usersRoutes);
 
-app.use((req, res, next: NextFunction) => {
+app.use((req, res, next) => {
     return next(new AppError(404, 'Could not find this route'));
 });
 

@@ -5,7 +5,7 @@ import Avatar from '../../shared/components/UIElements/Avatar';
 import Card from '../../shared/components/UIElements/Card';
 import './UserItem.css';
 
-import UserData from '../types/user-data';
+import UserData from '../types/user-type';
 
 const UserItem: FC<UserData> = props => {
     return (

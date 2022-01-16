@@ -5,7 +5,7 @@ import LoadingSpinner from '../../shared/components/UIElements/LoadingSpinner';
 import { useParams } from 'react-router-dom';
 import { useHttpClient } from '../../shared/hooks/use-http';
 import { useEffect, useState } from 'react';
-import { PlaceData } from '../types/place-data';
+import { PlaceData } from '../types/place-type';
 
 const UserPlaces = () => {
     const [loadedPlaces, setLoadedPlaces] = useState<PlaceData[]>();

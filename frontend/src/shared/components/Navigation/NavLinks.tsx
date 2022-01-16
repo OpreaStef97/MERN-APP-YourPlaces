@@ -14,6 +14,11 @@ const NavLinks: FC<{
         <ul className="nav-links">
             <li>
                 <NavLink onClick={props.onClick} to="/">
+                    ALL PLACES
+                </NavLink>
+            </li>
+            <li>
+                <NavLink onClick={props.onClick} to="/users">
                     ALL USERS
                 </NavLink>
             </li>

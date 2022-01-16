@@ -1,5 +1,5 @@
 import { createContext, FC } from 'react';
-import { LoginContext } from '../types/auth-data';
+import { LoginContext } from '../types/auth-type';
 import { useAuth } from '../hooks/use-auth';
 
 const initialState: LoginContext = {

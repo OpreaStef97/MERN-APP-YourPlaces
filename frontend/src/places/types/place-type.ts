@@ -4,7 +4,13 @@ export type PlaceData = {
     title: string;
     description: string;
     address: string;
-    creatorId: string;
+    creatorId:
+        | string
+        | {
+              id?: string;
+              name?: string;
+              imageUrl?: string;
+          };
     coordinates: {
         lat: number;
         lng: number;

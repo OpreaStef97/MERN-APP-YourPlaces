@@ -5,7 +5,7 @@ import PlaceItem from './PlaceItem';
 import Button from '../../shared/components/FormElements/Button';
 import './PlaceList.css';
 
-import { PlaceData } from '../types/place-data';
+import { PlaceData } from '../types/place-type';
 import { useParams } from 'react-router-dom';
 import { AuthContext } from '../../shared/context/auth-context';
 

@@ -3,7 +3,7 @@ import { FC } from 'react';
 import Card from '../../shared/components/UIElements/Card';
 import './UsersList.css';
 import UserItem from './UserItem';
-import UserData from '../types/user-data';
+import UserData from '../types/user-type';
 
 const UsersList: FC<{ items: UserData[] }> = props => {
     if (props.items.length === 0) {

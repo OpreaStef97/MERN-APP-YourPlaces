@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useReducer } from 'react';
-import { LoginState } from '../types/auth-data';
+import { LoginState } from '../types/auth-type';
 import decodeToken from 'jwt-decode';
-import { isTokenData } from '../types/token-data';
+import { isTokenData } from '../types/token-type';
 
 let logoutTimer: NodeJS.Timeout;
 

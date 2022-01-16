@@ -1,6 +1,6 @@
 import React, { FC, useState, useContext } from 'react';
 
-import { PlaceData } from '../types/place-data';
+import { PlaceData } from '../types/place-type';
 import { AuthContext } from '../../shared/context/auth-context';
 import { useHttpClient } from '../../shared/hooks/use-http';
 

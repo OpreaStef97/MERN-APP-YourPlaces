@@ -22,7 +22,7 @@ const Users = () => {
             <ErrorModal error={error} onClear={clearError} />
             {isLoading && (
                 <div className="center">
-                    <LoadingSpinner />
+                    <LoadingSpinner/>
                 </div>
             )}
             {!isLoading && loadedUsers && <UsersList items={loadedUsers} />}

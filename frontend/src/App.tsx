@@ -5,6 +5,7 @@ import MainNavigation from './shared/components/Navigation/MainNavigation';
 import { AuthContext } from './shared/context/auth-context';
 import LoadingSpinner from './shared/components/UIElements/LoadingSpinner';
 
+const Places = React.lazy(() => import('./places/pages/Places'));
 const Me = React.lazy(() => import('./user/pages/Me'));
 const Users = React.lazy(() => import('./user/pages/Users'));
 const NewPlace = React.lazy(() => import('./places/pages/NewPlace'));
@@ -19,8 +20,9 @@ const App = () => {
     if (token) {
         routes = (
             <>
-                <Route path="/" element={<Users />} />
+                <Route path="/" element={<Places />} />
                 <Route path="/me" element={<Me />} />
+                <Route path="/users" element={<Users />} />
                 <Route path="/:userId/places" element={<UserPlaces />} />
                 <Route path="/places/new" element={<NewPlace />} />
                 <Route path="/places/:placeId" element={<UpdatePlace />} />
@@ -30,7 +32,8 @@ const App = () => {
     } else {
         routes = (
             <>
-                <Route path="/" element={<Users />} />
+                <Route path="/" element={<Places />} />
+                <Route path="/users" element={<Users />} />
                 <Route path="/:userId/places" element={<UserPlaces />} />
                 <Route path="/auth" element={<Auth />} />
                 <Route path="*" element={<Navigate to="/auth" />} />

@@ -15,10 +15,29 @@ export const getAllPlaces = asyncHandler(
         const places = await Place.find();
 
         if (!places || places.length === 0)
-            return next(new AppError(500, 'Failed to fetch places'));
+            return next(new AppError(500, 'Failed to retrieve places'));
+
+        await Promise.all(
+            places.map(async place => {
+                const user = (
+                    await place.populate<{
+                        creatorId: UserDoc;
+                    }>('creatorId', '-id -__v -password -email -places')
+                ).creatorId;
+                return user;
+            })
+        );
+
+        const results = places.map(place => {
+            return {
+                ...place.toObject({ getters: true }),
+            };
+        });
 
         res.status(200).json({
-            data: places.map(place => place.toObject({ getters: true })),
+            data: {
+                places: results,
+            },
         });
     }
 );
@@ -141,7 +160,10 @@ export const updatePlace = asyncHandler(
             );
         }
 
-        if (!req.userData || place.creatorId.toString() !== req.userData.userId.toString()) {
+        if (
+            !req.userData ||
+            place.creatorId.toString() !== req.userData.userId.toString()
+        ) {
             return next(
                 new AppError(401, 'You are not allowed to edit this place.')
             );
