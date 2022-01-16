@@ -1,10 +1,8 @@
 import { FC, FormEvent, useContext, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import Button from '../../shared/components/FormElements/Button';
 import Input from '../../shared/components/FormElements/Input';
 import Card from '../../shared/components/UIElements/Card';
 import ErrorModal from '../../shared/components/UIElements/ErrorModal';
-import LoadingSpinner from '../../shared/components/UIElements/LoadingSpinner';
 import Modal from '../../shared/components/UIElements/Modal';
 import { AuthContext } from '../../shared/context/auth-context';
 import { useForm } from '../../shared/hooks/use-form';
@@ -18,7 +16,6 @@ import './Me.css';
 
 const Me: FC = () => {
     const authCtx = useContext(AuthContext);
-    const navigate = useNavigate();
     const [success, setSuccess] = useState(false);
     const { isLoading, error, sendRequest, clearError } = useHttpClient();
 
@@ -64,7 +61,6 @@ const Me: FC = () => {
 
     const closeModal = () => {
         setSuccess(false);
-        navigate('/');
     };
 
     return (
