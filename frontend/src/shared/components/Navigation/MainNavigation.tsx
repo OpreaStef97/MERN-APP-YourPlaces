@@ -78,9 +78,9 @@ const MainNavigation: FC = props => {
                                 alt={'logged-user-photo'}
                             />
                         </div>
-                        <p onClick={() => navigate(`/me`)}>
+                        {/* <p onClick={() => navigate(`/me`)}>
                             {authCtx.name?.split(' ')[0]}
-                        </p>
+                        </p> */}
                     </div>
                 )}
             </MainHeader>

@@ -91,11 +91,11 @@
     transition: all 0.3s;
 }
 
-.place-item__modal-content {
+.place-image__modal-content {
     padding: 0;
 }
 
-.place-item__modal-actions {
+.place-image__modal-actions {
     text-align: right;
 }
 

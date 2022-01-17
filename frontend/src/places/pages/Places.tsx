@@ -4,6 +4,7 @@ import LoadingSpinner from '../../shared/components/UIElements/LoadingSpinner';
 import { useHttpClient } from '../../shared/hooks/use-http';
 import PlaceImage from '../components/PlaceImage';
 import { PlaceData } from '../types/place-type';
+import shuffleArray from '../../shared/util/shuffle-array';
 import './Places.css';
 
 interface PlaceResult extends PlaceData {
@@ -22,7 +23,10 @@ const Places: FC = props => {
     useEffect(() => {
         sendRequest(`${process.env.REACT_APP_BACKEND_URL}/places`, 'GET')
             .then(res => {
-                setLoadedPlaces(res.data.places);
+                const { places } = res.data;
+                shuffleArray(places);
+
+                setLoadedPlaces(places);
             })
             .catch(err => console.log(err));
     }, [sendRequest]);

@@ -39,8 +39,8 @@ const PlaceImage: FC<{
                 onSubmit={() => {}}
                 onCancel={closeMapHandler}
                 header={props.address}
-                contentClass="place-item__modal-content map-content"
-                footerClass="place-item__modal-actions"
+                contentClass="place-image__modal-content map-content"
+                footerClass="place-image__modal-actions"
                 footer={<Button onClick={closeMapHandler}>CLOSE</Button>}
             >
                 <div className="map-container">

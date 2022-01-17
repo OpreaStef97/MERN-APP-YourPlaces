@@ -199,8 +199,6 @@ export const deletePlace = asyncHandler(
 
         const imagePath = place.imageUrl;
 
-        console.log(imagePath);
-
         // DB Transaction
         const sess = await startSession();
 
