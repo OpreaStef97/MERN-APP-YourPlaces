@@ -6,7 +6,6 @@ import AppError from '../models/app-error';
 import User from '../models/users';
 import { validationResult } from 'express-validator';
 import asyncHandler from '../util/async-handler';
-import { UserDoc } from '../interfaces/user-doc';
 
 export const getAllUsers = asyncHandler(
     async (req: Request, res: Response, next: NextFunction) => {

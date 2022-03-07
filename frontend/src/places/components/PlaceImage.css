@@ -1,5 +1,6 @@
 .place-image {
     position: relative;
+    cursor: pointer;
 }
 
 .place-image span {
@@ -9,6 +10,29 @@
 
 .place-image em {
     font-size: 1rem;
+}
+
+.button-box {
+    width: 100%;
+    height: 4rem;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.button-box button {
+    height: 3rem;
+    width: 10rem;
+    font-size: 1.2rem;
+}
+
+.place-image__close svg {
+    transform: scale(1);
+    transition: all 0.3s;
+}
+
+.place-image__close:hover svg {
+    transform: scale(1.1);
 }
 
 .place-image.panel-big span {
@@ -23,6 +47,7 @@
     top: 100%;
     left: 0%;
     z-index: 3;
+    cursor: auto;
 
     display: flex;
     flex-direction: column;
@@ -67,8 +92,16 @@
     transform: scale(1.1);
 }
 
-.place-image:hover .place-image__description {
+.place-image__description {
+    top: 100%;
+}
+
+.place-image__description.active {
     top: 0%;
+}
+
+.place-image__description.close {
+    top: 100%;
 }
 
 .place-image__user {
@@ -102,10 +135,4 @@
 .map-container {
     height: 20rem;
     width: 100%;
-}
-
-@media (max-width: 830px) {
-    .place-image__description {
-        display: none;
-    }
 }

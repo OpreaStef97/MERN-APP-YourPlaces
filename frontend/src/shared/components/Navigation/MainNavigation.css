@@ -65,7 +65,7 @@
     width: 3.8rem;
 }
 
-@media (min-width: 830px) {
+@media (min-width: 880px) {
     .main-navigation__menu-btn {
         display: none;
     }

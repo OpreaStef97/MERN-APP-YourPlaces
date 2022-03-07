@@ -11,6 +11,7 @@ html {
 body {
     margin: 0;
     background: #4d4d4d;
+    /* overflow-y: overlay; */
 }
 
 .slide-in-left-enter {

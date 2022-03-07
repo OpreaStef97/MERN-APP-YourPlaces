@@ -47,7 +47,6 @@ dotenv.config({ path: './config.env' });
     app.use(express.json({ limit: '10kb' }));
     app.use(express.urlencoded({ extended: true, limit: '10kb' }));
 
-    // Data sanitization against XSS
     app.use(helmet());
 
     // Data sanitization against NoSQL query injection
@@ -60,10 +59,7 @@ dotenv.config({ path: './config.env' });
             'Origin, X-Requested-With, Content-Type, Accept, Authorization'
         );
         // res.setHeader('Access-Control-Allow-Credentials', 'true');
-        res.setHeader(
-            'Access-Control-Allow-Methods',
-            'GET, POST, PATCH, DELETE'
-        );
+        res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PATCH, DELETE');
         next();
     });
 
@@ -89,10 +85,10 @@ dotenv.config({ path: './config.env' });
         throw new Error(`Can't connect to database`);
     }
 
-    const DB = DB_CONNECT.replace(
-        '<PASSWORD>',
-        encodeURIComponent(DB_PASSWORD)
-    ).replace('<USERNAME>', DB_USERNAME);
+    const DB = DB_CONNECT.replace('<PASSWORD>', encodeURIComponent(DB_PASSWORD)).replace(
+        '<USERNAME>',
+        DB_USERNAME
+    );
 
     await mongoose.connect(DB);
 
@@ -100,7 +96,7 @@ dotenv.config({ path: './config.env' });
     // SERVER
     ///////////////////////////////////////
 
-    const port = process.env.PORT || 5000;
+    const port = process.env.PORT || 8000;
     const server = app.listen(port, () => {
         console.log(`Listening to port ${port}..`);
     });

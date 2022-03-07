@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react';
+import React, { FC, useEffect, useRef, useState } from 'react';
 import Button from '../../shared/components/FormElements/Button';
 import LoadingSpinner from '../../shared/components/UIElements/LoadingSpinner';
 import Avatar from '../../shared/components/UIElements/Avatar';
@@ -7,6 +7,7 @@ import './PlaceImage.css';
 import { useNavigate } from 'react-router-dom';
 import Modal from '../../shared/components/UIElements/Modal';
 import Map from '../../shared/components/UIElements/Map';
+import useClickOutside from '../../shared/hooks/use-click-outside';
 
 const PlaceImage: FC<{
     title?: string;
@@ -22,6 +23,18 @@ const PlaceImage: FC<{
     const [loaded, setLoaded] = useState(false);
     const navigate = useNavigate();
     const [showMap, setShowMap] = useState(false);
+    const [showDescription, setShowDescription] = useState(false);
+
+    const ref = useRef<HTMLDivElement>(null);
+
+    const { clicked, clearClick } = useClickOutside(ref);
+
+    useEffect(() => {
+        if (clicked) {
+            setShowDescription(false);
+        }
+        clearClick();
+    }, [clearClick, clicked]);
 
     const openMapHandler = () => {
         setShowMap(true);
@@ -47,9 +60,11 @@ const PlaceImage: FC<{
                     <Map center={props.coordinates} zoom={16} className={''} />
                 </div>
             </Modal>
-            <div className={`place-image ${props.className}`}>
+            <div
+                className={`place-image ${props.className}`}
+                onClick={() => setShowDescription(true)}
+            >
                 {!loaded && <LoadingSpinner />}
-
                 <img
                     className="place-image__main-image"
                     style={loaded ? {} : { display: 'none' }}
@@ -58,16 +73,13 @@ const PlaceImage: FC<{
                     onLoad={() => setLoaded(true)}
                 />
 
-                <div className="place-image__description">
-                    <p className="place-image__description-title">
-                        {props.title}
-                    </p>
+                <div
+                    className={`place-image__description ${showDescription ? 'active' : 'close'}`}
+                    ref={ref}
+                >
+                    <p className="place-image__description-title">{props.title}</p>
                     <div className="place-image__user">
-                        <div
-                            onClick={() =>
-                                navigate(`/${props.creatorId}/places`)
-                            }
-                        >
+                        <div onClick={() => navigate(`/${props.creatorId}/places`)}>
                             <Avatar
                                 className="place-image__creator-avatar"
                                 image={`${process.env.REACT_APP_ASSET_URL}/${props.creatorImage}`}
@@ -78,13 +90,20 @@ const PlaceImage: FC<{
                             Shared by <em>{props.creatorName}</em>
                         </span>
                     </div>
-                    <Button
-                        className={'clear-margin'}
-                        inverse
-                        onClick={openMapHandler}
-                    >
-                        See on map
-                    </Button>
+                    <div className="button-box">
+                        <Button className={'clear-margin'} inverse onClick={openMapHandler}>
+                            See on map
+                        </Button>
+                        <Button
+                            onClick={(e: React.MouseEvent) => {
+                                e.stopPropagation();
+                                setShowDescription(false);
+                            }}
+                            className={'clear-margin'}
+                        >
+                            Close
+                        </Button>
+                    </div>
                 </div>
             </div>
         </>
