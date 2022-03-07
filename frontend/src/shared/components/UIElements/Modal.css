@@ -30,6 +30,11 @@
     padding: 1rem 0.5rem;
 }
 
+.modal__footer button {
+    width: 8rem;
+    height: 2.5rem;
+}
+
 :root {
     --width: 60%;
 }

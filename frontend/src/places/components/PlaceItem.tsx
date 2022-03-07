@@ -1,4 +1,4 @@
-import React, { FC, useState, useContext } from 'react';
+import React, { useState, useContext, RefObject } from 'react';
 
 import { PlaceData } from '../types/place-type';
 import { AuthContext } from '../../shared/context/auth-context';
@@ -12,7 +12,7 @@ import Map from '../../shared/components/UIElements/Map';
 import Modal from '../../shared/components/UIElements/Modal';
 import './PlaceItem.css';
 
-const PlaceItem: FC<PlaceData & { onDelete: (id: string) => void }> = props => {
+const PlaceItem = React.forwardRef((props: PlaceData & { onDelete: (id: string) => void }, ref) => {
     const authCtx = useContext(AuthContext);
     const [showMap, setShowMap] = useState(false);
     const [showConfirmModal, setShowConfirmModal] = useState(false);
@@ -35,13 +35,9 @@ const PlaceItem: FC<PlaceData & { onDelete: (id: string) => void }> = props => {
 
     const confirmDeleteHandler = () => {
         setShowConfirmModal(false);
-        sendRequest(
-            `${process.env.REACT_APP_BACKEND_URL}/places/${props.id}`,
-            'DELETE',
-            {
-                Authorization: 'Bearer ' + authCtx.token,
-            }
-        )
+        sendRequest(`${process.env.REACT_APP_BACKEND_URL}/places/${props.id}`, 'DELETE', {
+            Authorization: 'Bearer ' + authCtx.token,
+        })
             .then(() => {
                 props.onDelete(props.id);
             })
@@ -81,11 +77,11 @@ const PlaceItem: FC<PlaceData & { onDelete: (id: string) => void }> = props => {
                 }
             >
                 <p>
-                    Do you want to proceed and delete this place? Please note
-                    that it can't be undone threafter
+                    Do you want to proceed and delete this place? Please note that it can't be
+                    undone threafter
                 </p>
             </Modal>
-            <li className="place-item">
+            <li className="place-item" ref={ref as unknown as RefObject<HTMLLIElement>}>
                 <Card className="place-item__card">
                     {isLoading && <LoadingSpinner asOverlay />}
                     <div className="place-item__image">
@@ -116,6 +112,6 @@ const PlaceItem: FC<PlaceData & { onDelete: (id: string) => void }> = props => {
             </li>
         </>
     );
-};
+});
 
 export default PlaceItem;

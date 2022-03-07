@@ -7,6 +7,7 @@ import path from 'path';
 import expressLimiter from 'express-rate-limit';
 import mongoSanitize from 'express-mongo-sanitize';
 import helmet from 'helmet';
+import cors from 'cors';
 
 import AppError from './src/models/app-error';
 import placesRoutes from './src/routes/places-routes';
@@ -26,8 +27,22 @@ dotenv.config({ path: './config.env' });
 (async () => {
     const app = express();
 
+    app.use(
+        helmet({
+            crossOriginResourcePolicy: { policy: 'cross-origin' },
+        })
+    );
+
+    app.use(
+        cors({
+            credentials: true,
+            origin: ['http://localhost:3000'],
+            allowedHeaders: ['Content-Type', 'Authorization', 'x-csrf-token', 'stripe-signature'],
+        })
+    );
+
     const limiter = expressLimiter({
-        max: 200,
+        max: 4000,
         windowMs: 60 * 60 * 1000,
         message: 'Too many requests from this IP, please try again in an hour',
     });
@@ -47,21 +62,8 @@ dotenv.config({ path: './config.env' });
     app.use(express.json({ limit: '10kb' }));
     app.use(express.urlencoded({ extended: true, limit: '10kb' }));
 
-    app.use(helmet());
-
     // Data sanitization against NoSQL query injection
     app.use(mongoSanitize());
-
-    app.use((req, res, next) => {
-        res.setHeader('Access-Control-Allow-Origin', '*');
-        res.setHeader(
-            'Access-Control-Allow-Headers',
-            'Origin, X-Requested-With, Content-Type, Accept, Authorization'
-        );
-        // res.setHeader('Access-Control-Allow-Credentials', 'true');
-        res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PATCH, DELETE');
-        next();
-    });
 
     app.use('/api/places', placesRoutes);
     app.use('/api/users', usersRoutes);

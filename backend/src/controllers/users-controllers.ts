@@ -6,18 +6,21 @@ import AppError from '../models/app-error';
 import User from '../models/users';
 import { validationResult } from 'express-validator';
 import asyncHandler from '../util/async-handler';
+import APIFeatures from '../api/api-features';
 
-export const getAllUsers = asyncHandler(
-    async (req: Request, res: Response, next: NextFunction) => {
-        const users = await User.find().select('-password -email');
+export const getAllUsers = asyncHandler(async (req: Request, res: Response) => {
+    const usersQuery = new APIFeatures(User.find().select('-password -email'), req.query)
+        .filter()
+        .limitFields()
+        .sort()
+        .paginate();
 
-        if (!users) return next(new AppError(404, 'No user found'));
+    const users = await usersQuery.query;
 
-        res.status(200).json({
-            users: users.map(user => user.toObject({ getters: true })),
-        });
-    }
-);
+    res.status(200).json({
+        users: users.map(user => user.toObject({ getters: true })),
+    });
+});
 
 export const changePassword = asyncHandler(
     async (req: Request, res: Response, next: NextFunction) => {
@@ -25,10 +28,7 @@ export const changePassword = asyncHandler(
 
         if (!errors.isEmpty()) {
             return next(
-                new AppError(
-                    422,
-                    'Invalid inputs passed, please check your email and password.'
-                )
+                new AppError(422, 'Invalid inputs passed, please check your email and password.')
             );
         }
 
@@ -45,12 +45,7 @@ export const changePassword = asyncHandler(
         // check if identifiedUser is logged in
 
         if (identifiedUser.id.toString() !== req.userData.userId) {
-            return next(
-                new AppError(
-                    401,
-                    'You need to be logged in to perform this action'
-                )
-            );
+            return next(new AppError(401, 'You need to be logged in to perform this action'));
         }
 
         // check password
@@ -75,112 +70,86 @@ export const changePassword = asyncHandler(
     }
 );
 
-export const signup = asyncHandler(
-    async (req: Request, res: Response, next: NextFunction) => {
-        const errors = validationResult(req);
+export const signup = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+    const errors = validationResult(req);
 
-        if (!errors.isEmpty()) {
-            return next(
-                new AppError(
-                    422,
-                    'Invalid inputs passed, please check your data.'
-                )
-            );
-        }
-
-        const { name, email, password } = req.body;
-
-        const hashedPassword = await bcrypt.hash(password, 12);
-
-        const createdUser = new User({
-            name,
-            email,
-            password: hashedPassword,
-            imageUrl: req.file?.path,
-            places: [],
-        });
-
-        const secretKey = process.env.SECRET_KEY;
-
-        if (!secretKey) {
-            return next(
-                new AppError(
-                    500,
-                    'Something went wrong. Please try again later.'
-                )
-            );
-        }
-
-        const token = await signAsyncJWT(
-            {
-                userId: createdUser.id,
-                email: createdUser.email,
-                imageUrl: createdUser.imageUrl,
-                name: createdUser.name,
-            },
-            secretKey
-        );
-
-        await createdUser.save();
-
-        res.status(201).json({
-            token,
-        });
+    if (!errors.isEmpty()) {
+        return next(new AppError(422, 'Invalid inputs passed, please check your data.'));
     }
-);
 
-export const login = asyncHandler(
-    async (req: Request, res: Response, next: NextFunction) => {
-        const errors = validationResult(req);
+    const { name, email, password } = req.body;
 
-        if (!errors.isEmpty()) {
-            return next(new AppError(422, 'Please provide an email!'));
-        }
+    const hashedPassword = await bcrypt.hash(password, 12);
 
-        const { email, password } = req.body;
+    const createdUser = new User({
+        name,
+        email,
+        password: hashedPassword,
+        imageUrl: req.file?.path,
+        places: [],
+    });
 
-        const identifiedUser = await User.findOne({ email });
+    const secretKey = process.env.SECRET_KEY;
 
-        if (!identifiedUser) {
-            return next(
-                new AppError(401, 'Invalid credentials, could not log you in.')
-            );
-        }
-
-        const isValidPassword = await bcrypt.compare(
-            password,
-            identifiedUser.password.toString()
-        );
-
-        if (!isValidPassword) {
-            return next(
-                new AppError(401, 'Invalid credentials, could not log you in.')
-            );
-        }
-
-        const secretKey = process.env.SECRET_KEY;
-
-        if (!secretKey) {
-            return next(
-                new AppError(
-                    500,
-                    'Something went wrong, please try again later.'
-                )
-            );
-        }
-
-        const token = await signAsyncJWT(
-            {
-                userId: identifiedUser.id,
-                email: identifiedUser.email,
-                imageUrl: identifiedUser.imageUrl,
-                name: identifiedUser.name,
-            },
-            secretKey
-        );
-
-        res.status(200).json({
-            token,
-        });
+    if (!secretKey) {
+        return next(new AppError(500, 'Something went wrong. Please try again later.'));
     }
-);
+
+    const token = await signAsyncJWT(
+        {
+            userId: createdUser.id,
+            email: createdUser.email,
+            imageUrl: createdUser.imageUrl,
+            name: createdUser.name,
+        },
+        secretKey
+    );
+
+    await createdUser.save();
+
+    res.status(201).json({
+        token,
+    });
+});
+
+export const login = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+        return next(new AppError(422, 'Please provide an email!'));
+    }
+
+    const { email, password } = req.body;
+
+    const identifiedUser = await User.findOne({ email });
+
+    if (!identifiedUser) {
+        return next(new AppError(401, 'Invalid credentials, could not log you in.'));
+    }
+
+    const isValidPassword = await bcrypt.compare(password, identifiedUser.password.toString());
+
+    if (!isValidPassword) {
+        return next(new AppError(401, 'Invalid credentials, could not log you in.'));
+    }
+
+    const secretKey = process.env.SECRET_KEY;
+
+    if (!secretKey) {
+        return next(new AppError(500, 'Something went wrong, please try again later.'));
+    }
+
+    const token = await signAsyncJWT(
+        {
+            userId: identifiedUser.id,
+            email: identifiedUser.email,
+            imageUrl: identifiedUser.imageUrl,
+            name: identifiedUser.name,
+        },
+        secretKey
+    );
+
+    res.status(200).json({
+        token,
+    });
+});

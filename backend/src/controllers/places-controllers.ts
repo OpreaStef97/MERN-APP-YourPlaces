@@ -11,43 +11,32 @@ import User from '../models/users';
 import { UserDoc } from '../interfaces/user-doc';
 import APIFeatures from '../api/api-features';
 
-export const getAllPlaces = asyncHandler(
-    async (req: Request, res: Response, next: NextFunction) => {
-        const placesQuery = new APIFeatures(Place.find(), req.query)
-            .filter()
-            .sort()
-            .paginate()
-            .limitFields();
+export const getAllPlaces = asyncHandler(async (req: Request, res: Response) => {
+    const placesQuery = new APIFeatures(
+        Place.find().populate<{
+            creatorId: UserDoc;
+        }>('creatorId', '-id -__v -password -email -places'),
+        req.query
+    )
+        .filter()
+        .limitFields()
+        .sort()
+        .paginate();
 
-        const places = await placesQuery.query;
+    const places = await placesQuery.query;
 
-        if (!places || places.length === 0)
-            return next(new AppError(500, 'Failed to retrieve places'));
+    const results = places.map(place => {
+        return {
+            ...place.toObject({ getters: true }),
+        };
+    });
 
-        await Promise.all(
-            places.map(async place => {
-                const user = (
-                    await place.populate<{
-                        creatorId: UserDoc;
-                    }>('creatorId', '-id -__v -password -email -places')
-                ).creatorId;
-                return user;
-            })
-        );
-
-        const results = places.map(place => {
-            return {
-                ...place.toObject({ getters: true }),
-            };
-        });
-
-        res.status(200).json({
-            data: {
-                places: results,
-            },
-        });
-    }
-);
+    res.status(200).json({
+        data: {
+            places: results,
+        },
+    });
+});
 
 export const getPlaceById = asyncHandler(
     async (req: Request, res: Response, next: NextFunction) => {
@@ -67,13 +56,15 @@ export const getPlaceById = asyncHandler(
 );
 
 export const getPlacesByUserId = asyncHandler(
-    async (req: Request, res: Response, next: NextFunction) => {
+    async (req: Request, res: Response) => {
         const userId = req.params.uid;
-        const places = await Place.find({ creatorId: userId });
+        const placesQuery = new APIFeatures(Place.find({ creatorId: userId }), req.query)
+            .filter()
+            .limitFields()
+            .sort()
+            .paginate();
 
-        if (!places || places.length === 0) {
-            return next(new AppError(404, 'Could not find any place for the provided id'));
-        }
+        const places = await placesQuery.query
 
         res.json({
             data: {
