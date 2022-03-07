@@ -24,6 +24,8 @@ const Users = () => {
             .catch(err => setHasMore(false));
     }, [page, sendRequest]);
 
+    console.log(loadedUsers);
+
     const lastUserRef = useInfiniteScroll({ isLoading, hasMore, setPage });
 
     return (

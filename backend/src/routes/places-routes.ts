@@ -10,6 +10,7 @@ import {
 } from '../controllers/places-controllers';
 import fileUpload from '../middleware/file-upload';
 import checkAuth from '../middleware/check-auth';
+import { resizeImage } from '../middleware/resize-image';
 
 const router = express.Router();
 
@@ -24,6 +25,7 @@ router.use(checkAuth);
 router.post(
     '/',
     fileUpload.single('image'),
+    resizeImage({ place: true }),
     [
         check('title').not().isEmpty(),
         check('description').isLength({

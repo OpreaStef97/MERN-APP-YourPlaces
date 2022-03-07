@@ -69,7 +69,7 @@ const PlaceImage = React.forwardRef(
                     ref={Fref as unknown as RefObject<HTMLDivElement>}
                     className={`place-image ${props.className}`}
                     onClick={e => {
-                        setShowDescription(true);
+                        setShowDescription(prev => !prev);
                     }}
                 >
                     {!loaded && <LoadingSpinner />}
@@ -103,15 +103,6 @@ const PlaceImage = React.forwardRef(
                         <div className="button-box">
                             <Button className={'clear-margin'} inverse onClick={openMapHandler}>
                                 See on map
-                            </Button>
-                            <Button
-                                onClick={(e: React.MouseEvent) => {
-                                    e.stopPropagation();
-                                    setShowDescription(false);
-                                }}
-                                className={'clear-margin'}
-                            >
-                                Close
                             </Button>
                         </div>
                     </div>

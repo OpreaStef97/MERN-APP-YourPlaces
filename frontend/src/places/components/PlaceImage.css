@@ -14,12 +14,9 @@
 }
 
 .button-box {
-    flex-grow: 1;
     width: 100%;
-    height: 4rem;
     display: flex;
     justify-content: space-around;
-    /* gap: 1rem; */
     align-items: center;
 }
 
@@ -31,6 +28,8 @@
 @media (max-width: 410px) {
     .button-box {
         gap: 1rem;
+        width: 12rem;
+        height: 4rem;
         justify-content: center;
         flex-direction: column;
     }
@@ -68,7 +67,8 @@
     background-color: #fff;
     opacity: 0.85;
     align-items: center;
-    justify-content: center;
+    justify-content: space-around;
+    text-align: center;
 
     position: absolute;
     transition: all 0.5s;

@@ -4,6 +4,7 @@ import LoadingSpinner from '../../shared/components/UIElements/LoadingSpinner';
 import { useHttpClient } from '../../shared/hooks/use-http';
 import useInfiniteScroll from '../../shared/hooks/use-infinite-scroll';
 import useWindow from '../../shared/hooks/use-window';
+import shuffleArray from '../../shared/util/shuffle-array';
 import PlaceImage from '../components/PlaceImage';
 import { PlaceData } from '../types/place-type';
 import './Places.css';
@@ -24,9 +25,10 @@ const Places: FC = props => {
     const [hasMore, setHasMore] = useState(false);
 
     useEffect(() => {
-        sendRequest(`${process.env.REACT_APP_BACKEND_URL}/places?page=${page}&limit=7`)
+        sendRequest(`${process.env.REACT_APP_BACKEND_URL}/places?page=${page}&limit=6`)
             .then(res => {
                 const { places } = res.data;
+                shuffleArray(places);
                 setLoadedPlaces(prev => {
                     return [...prev, ...places];
                 });
@@ -44,7 +46,7 @@ const Places: FC = props => {
             <ErrorModal error={error} onClear={clearError} />
             {isLoading && (
                 <div className="center">
-                    <LoadingSpinner asOverlay/>
+                    <LoadingSpinner asOverlay />
                 </div>
             )}
             <ul className="wrapper" style={{ paddingLeft: 0 }}>

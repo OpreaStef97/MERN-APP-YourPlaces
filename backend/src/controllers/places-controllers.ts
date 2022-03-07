@@ -55,24 +55,22 @@ export const getPlaceById = asyncHandler(
     }
 );
 
-export const getPlacesByUserId = asyncHandler(
-    async (req: Request, res: Response) => {
-        const userId = req.params.uid;
-        const placesQuery = new APIFeatures(Place.find({ creatorId: userId }), req.query)
-            .filter()
-            .limitFields()
-            .sort()
-            .paginate();
+export const getPlacesByUserId = asyncHandler(async (req: Request, res: Response) => {
+    const userId = req.params.uid;
+    const placesQuery = new APIFeatures(Place.find({ creatorId: userId }), req.query)
+        .filter()
+        .limitFields()
+        .sort()
+        .paginate();
 
-        const places = await placesQuery.query
+    const places = await placesQuery.query;
 
-        res.json({
-            data: {
-                places: places.map(place => place.toObject({ getters: true })),
-            },
-        });
-    }
-);
+    res.json({
+        data: {
+            places: places.map(place => place.toObject({ getters: true })),
+        },
+    });
+});
 
 export const createPlace = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
     const errors = validationResult(req);
@@ -91,7 +89,7 @@ export const createPlace = asyncHandler(async (req: Request, res: Response, next
         description,
         address,
         coordinates,
-        imageUrl: req.file?.path,
+        imageUrl: req.file?.filename,
         creatorId,
     });
 
@@ -178,7 +176,7 @@ export const deletePlace = asyncHandler(async (req: Request, res: Response, next
 
     await sess.commitTransaction();
 
-    fs.unlink(imagePath.toString(), err => {
+    fs.unlink('public/images/' + imagePath.toString(), err => {
         console.log(err);
     });
 

@@ -43,11 +43,7 @@ const UserPlaces = () => {
     return (
         <>
             <ErrorModal erorr={error} onClear={clearError} />
-            {isLoading && (
-                <div className="center">
-                    <LoadingSpinner />
-                </div>
-            )}
+            {isLoading && <LoadingSpinner asOverlay />}
             {!isLoading && loadedPlaces.length === 0 && (
                 <div className="place-list center">
                     <Card>

@@ -7,11 +7,21 @@
 html {
     font-family: 'Open Sans', sans-serif;
 }
+@media (max-width: 840px) {
+    html {
+        font-size: 90%;
+    }
+}
 
 body {
     margin: 0;
     background: #4d4d4d;
-    /* overflow-y: overlay; */
+    overflow-y: overlay;
+}
+@supports not (overflow-y: overlay) {
+    body {
+        overflow-y: auto;
+    }
 }
 
 .slide-in-left-enter {
@@ -44,4 +54,30 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+::-webkit-scrollbar {
+    width: 0.75em;
+}
+
+::-webkit-scrollbar-track {
+    background: #ffb8d0;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #ff0055;
+    border: 0.1em solid #ffb8d0;
+    border-radius: 1em;
+    min-height: 5em;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #830000;
+}
+
+@supports (scrollbar-color: red blue) {
+    * {
+        scrollbar-color: #ff3d7e #ffb8d0;
+        scrollbar-width: auto;
+    }
 }

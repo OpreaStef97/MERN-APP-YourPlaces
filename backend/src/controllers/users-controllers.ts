@@ -85,7 +85,7 @@ export const signup = asyncHandler(async (req: Request, res: Response, next: Nex
         name,
         email,
         password: hashedPassword,
-        imageUrl: req.file?.path,
+        imageUrl: req.file?.filename,
         places: [],
     });
 

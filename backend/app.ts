@@ -1,6 +1,5 @@
 import express from 'express';
 import morgan from 'morgan';
-import bodyParser from 'body-parser';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import path from 'path';
@@ -36,7 +35,11 @@ dotenv.config({ path: './config.env' });
     app.use(
         cors({
             credentials: true,
-            origin: ['http://localhost:3000'],
+            origin: [
+                'http://localhost:3000',
+                'https://your-places-stef.web.app',
+                'https://maps.googleapis.com',
+            ],
             allowedHeaders: ['Content-Type', 'Authorization', 'x-csrf-token', 'stripe-signature'],
         })
     );
@@ -52,11 +55,8 @@ dotenv.config({ path: './config.env' });
     if (process.env.NODE_ENV === 'development') {
         app.use(morgan('dev'));
     }
-    app.use(bodyParser.json());
 
-    const staticHandler = express.static(path.join('uploads', 'images'));
-
-    app.use('/uploads/images', staticHandler);
+    app.use(express.static(path.join('public')));
 
     // Body parser, reading data from body into req.body
     app.use(express.json({ limit: '10kb' }));
